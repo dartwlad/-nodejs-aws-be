@@ -1,0 +1,19 @@
+openapi: 3.0.0
+components:
+  schemas: {}
+  securitySchemes: {}
+info:
+  title: products-service
+  description: products-service-API
+  version: '1'
+paths:
+  /products:
+    get:
+      operationId: getProducts
+      summary: Get Products
+      responses: {}
+  '/products/{productId}':
+    get:
+      operationId: getProductsById
+      summary: Get Product By Id
+      responses: {}
