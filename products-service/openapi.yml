@@ -1,19 +1,111 @@
-openapi: 3.0.0
-components:
-  schemas: {}
-  securitySchemes: {}
+---
+swagger: "2.0"
 info:
-  title: products-service
-  description: products-service-API
-  version: '1'
+  description: "Product Service API"
+  version: "2020-11-01T22:18:31Z"
+  title: "dev-products-service"
+host: "2bs26yvgma.execute-api.us-east-1.amazonaws.com"
+basePath: "/dev"
+schemes:
+- "https"
 paths:
   /products:
     get:
-      operationId: getProducts
-      summary: Get Products
-      responses: {}
-  '/products/{productId}':
+      description: "Get all products"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "productId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/ProductList"
+    options:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+  /products/{productId}:
     get:
-      operationId: getProductsById
-      summary: Get Product By Id
-      responses: {}
+      description: "Get product by productId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "productId"
+        in: "path"
+        description: "Product id"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/Product"
+        404:
+          description: "404 response"
+          schema:
+            $ref: "#/definitions/ServiceError"
+    options:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+definitions:
+  ProductList:
+    type: "array"
+    description: "List of products"
+    items:
+      $ref: "#/definitions/Product"
+  ServiceError:
+    type: "object"
+    properties:
+      error:
+        type: "string"
+        description: "Error message"
+      statusCode:
+        type: "number"
+        description: "Status code of error"
+    description: "Service error"
+  Product:
+    type: "object"
+    properties:
+      image:
+        type: "string"
+        description: "Product image"
+      price:
+        type: "number"
+        description: "Product price"
+      description:
+        type: "string"
+        description: "Product description"
+      id:
+        type: "number"
+        description: "Product id"
+      title:
+        type: "string"
+        description: "Product title"
+    description: "Product model"

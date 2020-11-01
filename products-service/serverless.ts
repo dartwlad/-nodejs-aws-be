@@ -5,23 +5,95 @@ const serverlessConfiguration: Serverless = {
     name: 'products-service',
   },
   frameworkVersion: '2',
-  plugins: ['serverless-webpack', 'serverless-openapi-documentation'],
+  plugins: [
+    'serverless-webpack',
+    'serverless-offline',
+    'serverless-aws-documentation'
+  ],
+  custom: {
+    documentation: {
+      api: {
+        info: {
+          version: '1',
+          title: 'product-service-API',
+          description: 'Product Service API'
+        }
+      },
+      models: [{
+        name: 'Product',
+        description: 'Product model',
+        contentType: 'application/json',
+        schema: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'number',
+              description: 'Product id',
+            },
+            title: {
+              type: 'string',
+              description: 'Product title',
+            },
+            description: {
+              type: 'string',
+              description: 'Product description',
+            },
+            price: {
+              type: 'number',
+              description: 'Product price',
+            },
+            image: {
+              type: 'string',
+              description: 'Product image',
+            }
+          }
+        }
+      },
+      {
+        name: 'ProductList',
+        description: 'List of products',
+        contentType: 'application/json',
+        schema: {
+          type: 'array',
+          items: {
+            $ref: '{{model: Product}}'
+          }
+        }
+      },
+      {
+        name: 'ServiceError',
+        description: 'Service error',
+        contentType: 'application/json',
+        schema: {
+          type: 'object',
+          properties: {
+            statusCode: {
+              type: 'number',
+              description: 'Status code of error'
+            },
+            error: {
+              type: 'string',
+              description: 'Error message'
+            }
+          }
+        }
+      }]
+    },
+    'serverless-offline': {
+      httpPort: 9000
+    }
+  },
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
     stage: 'dev',
     region: 'us-east-1',
-  },
-  custom: {
-    documentation: {
-      version: '1',
-      title: 'products-service',
-      description: 'products-service-API',
+    apiGateway: {
+      minimumCompressionSize: 1024,
     },
-    // webpack: {
-    //   webpackConfig: 'webpack.config.js',
-    //   includeModules: true
-    // }
+    environment: {
+      AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+    },
   },
   functions: {
     getProducts: {
@@ -41,11 +113,11 @@ const serverlessConfiguration: Serverless = {
             },
             // @ts-ignore
             documentation: {
-              summary: 'Get Products',
+              description: 'Get all products',
               methodResponses: [{
-                statusCode: 200,
-                responseBody: {
-                  description: 'List of products'
+                statusCode: '200',
+                responseModels: {
+                  'application/json': 'ProductList'
                 }
               }]
             }
@@ -63,24 +135,21 @@ const serverlessConfiguration: Serverless = {
             cors: true,
             // @ts-ignore
             documentation: {
-              summary: 'Get Product By Id',
+              description: 'Get product by productId',
               pathParams: [{
                 name: 'productId',
-                schema: {
-                  type: 'number',
-                  pattern: '^\d+$'
-                }
+                description: 'Product id'
               }],
               methodResponses: [{
-                statusCode: 200,
-                responseBody: {
-                  description: 'Product'
+                statusCode: '200',
+                responseModels: {
+                  'application/json': 'Product'
                 }
               },
-                {
-                statusCode: 404,
-                responseBody: {
-                  description: 'not found error'
+              {
+                statusCode: '404',
+                responseModels: {
+                  'application/json': 'ServiceError'
                 }
               }]
             }
