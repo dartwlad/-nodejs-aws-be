@@ -1,0 +1,14 @@
+{
+  "name": "nodejs-aws-be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:dartwlad/nodejs-aws-be.git",
+  "author": "dartwlad <wlad792@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^2.9.0"
+  },
+  "scripts": {
+    "create:service": "serverless create --template aws-nodejs-typescript --path name"
+  }
+}

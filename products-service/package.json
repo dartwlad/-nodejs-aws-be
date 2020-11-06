@@ -1,0 +1,42 @@
+{
+  "name": "products-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "dev": "sls offline",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:function": "serverless invoke local --function name",
+    "doc:downloadDocumentation": "sls downloadDocumentation --outputFileName=openapi.yml",
+    "deploy": "sls deploy"
+  },
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.17",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^10.12.18",
+    "@types/serverless": "^1.72.5",
+    "eslint": "^7.12.1",
+    "jest": "^26.6.1",
+    "serverless": "^2.9.0",
+    "serverless-aws-documentation": "^1.1.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-webpack": "^5.2.0",
+    "ts-jest": "^26.4.3",
+    "ts-loader": "^5.3.3",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.2.4",
+    "webpack": "^4.44.1",
+    "webpack-node-externals": "^2.5.0"
+  },
+  "author": "wlad792@gmail.com",
+  "license": "MIT",
+  "jest": {
+    "preset": "ts-jest"
+  }
+}
