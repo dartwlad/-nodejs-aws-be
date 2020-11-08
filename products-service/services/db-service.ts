@@ -1,15 +1,11 @@
 import { Client } from 'pg';
-// const {Client} = require('pg');
-import {config} from 'dotenv';
-config();
-// require('dotenv').config();
 import {Product} from "../models/Product";
 import {DbException} from "../exceptions/DbException";
 import {LogService} from "./log-service";
 import {CreateProductDto} from "../dto/create-product.dto";
 
 export class DbService {
-    private client;
+    private client: Client;
     private logService: LogService;
 
     constructor() {
@@ -17,7 +13,7 @@ export class DbService {
         this.logService = new LogService();
     }
 
-    getClient() {
+    getClient(): Client {
         return new Client(this.getDbOptions());
     }
 
@@ -77,14 +73,16 @@ export class DbService {
                 count,
                 image
             } = body as CreateProductDto;
-
+            this.client.query('BEGIN');
             await this.client.query(
                 `with resp1 as (insert into product(title, description, price, image) values($1, $2, $3, $4) returning id)
                  insert into stock (product_id, count) values ((select id from resp1), $5)`,
                 [title, description, price, image, count]
             );
+            this.client.query('COMMIT');
         } catch (e) {
             this.logService.error('createProduct', e);
+            this.client.query('ROLLBACK');
             throw new DbException();
         } finally {
             await this.client.end();

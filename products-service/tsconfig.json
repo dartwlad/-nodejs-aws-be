@@ -3,14 +3,12 @@
     "experimentalDecorators": true,
     "lib": ["es2017"],
     "removeComments": true,
-    "module": "ESNext",
     "moduleResolution": "node",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "sourceMap": true,
     "target": "es2017",
-    "outDir": "lib",
-    "esModuleInterop": true
+    "outDir": "lib"
   },
   "include": ["./**/*.ts"],
   "exclude": [
