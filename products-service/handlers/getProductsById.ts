@@ -1,9 +1,11 @@
-import {ProductsService} from "../../services/products-service";
+import {ProductsService} from "../services/products-service";
 import {headers} from "../mocks/headers";
+import {LogService} from "../services/log-service";
 
 export const getProductsById: (event) => Promise<{ body: string; statusCode: number } | { body: string; statusCode: any }> = async (event) => {
     try {
-        const body = JSON.stringify(await new ProductsService().getProductsById(Number(event.pathParameters.productId)));
+        new LogService().log('about to getProductsById', event);
+        const body = JSON.stringify(await new ProductsService().getProductsById(event.pathParameters.productId));
         return {
             statusCode: 200,
             body,

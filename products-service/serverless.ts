@@ -2,7 +2,7 @@ import type { Serverless } from 'serverless/aws';
 
 const serverlessConfiguration: Serverless = {
   service: {
-    name: 'products-service',
+    name: 'products-crud-service',
   },
   frameworkVersion: '2',
   plugins: [
@@ -81,6 +81,10 @@ const serverlessConfiguration: Serverless = {
     },
     'serverless-offline': {
       httpPort: 9000
+    },
+    webpack: {
+      webpackConfig: './webpack.config.js',
+      includeModules: false
     }
   },
   provider: {
@@ -93,6 +97,16 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PG_HOST: 'task4.cxj8hx8jheuz.us-east-1.rds.amazonaws.com',
+      PG_PORT: 5432,
+      PG_DATABASE: 'taskdb',
+      PG_USERNAME: 'postgres',
+      PG_PASSWORD: 'Q!werty123'
+      // PG_HOST: '',
+      // PG_PORT: '',
+      // PG_DATABASE: '',
+      // PG_USERNAME: '',
+      // PG_PASSWORD: ''
     },
   },
   functions: {
@@ -104,13 +118,6 @@ const serverlessConfiguration: Serverless = {
             method: 'get',
             path: 'products',
             cors: true,
-            request: {
-              parameters: {
-                paths: {
-                  productId: true
-                }
-              }
-            },
             // @ts-ignore
             documentation: {
               description: 'Get all products',
@@ -157,6 +164,18 @@ const serverlessConfiguration: Serverless = {
         }
       ]
     },
+    createProduct: {
+      handler: 'handler.createProduct',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'products',
+            cors: true
+          }
+        }
+      ]
+    }
   }
 }
 

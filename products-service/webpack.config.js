@@ -1,6 +1,7 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
+const webpack = require("webpack");
 
 module.exports = {
   context: __dirname,
@@ -38,5 +39,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [],
+  // plugins: [new webpack.IgnorePlugin(/^pg$/)]
 };
