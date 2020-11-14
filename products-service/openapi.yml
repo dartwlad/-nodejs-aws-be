@@ -2,9 +2,9 @@
 swagger: "2.0"
 info:
   description: "Product Service API"
-  version: "2020-11-01T22:18:31Z"
-  title: "dev-products-service"
-host: "2bs26yvgma.execute-api.us-east-1.amazonaws.com"
+  version: "2020-11-08T20:10:46Z"
+  title: "dev-products-service-crud"
+host: "smdlu52cef.execute-api.us-east-1.amazonaws.com"
 basePath: "/dev"
 schemes:
 - "https"
@@ -14,16 +14,13 @@ paths:
       description: "Get all products"
       produces:
       - "application/json"
-      parameters:
-      - name: "productId"
-        in: "path"
-        required: true
-        type: "string"
       responses:
         200:
           description: "200 response"
           schema:
             $ref: "#/definitions/ProductList"
+    post:
+      responses: {}
     options:
       consumes:
       - "application/json"

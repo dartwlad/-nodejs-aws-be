@@ -1,5 +1,5 @@
 import {getProductsById} from "./getProductsById";
-import {ProductsService} from "../../services/products-service";
+import {ProductsService} from "../services/products-service";
 import {products} from "../mocks/products";
 import {headers} from "../mocks/headers";
 

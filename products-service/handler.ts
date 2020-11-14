@@ -1,4 +1,10 @@
+import 'source-map-support/register';
+import {config} from 'dotenv';
+
 import {getProductsById} from './handlers/getProductsById';
 import {getProducts} from './handlers/getProducts';
+import {createProduct} from './handlers/createProduct';
 
-export { getProductsById, getProducts };
+config();
+
+export { getProductsById, getProducts, createProduct };

@@ -2,15 +2,14 @@ import type { Serverless } from 'serverless/aws';
 
 const serverlessConfiguration: Serverless = {
   service: {
-    name: 'products-service',
+    name: 'products-service-crud',
   },
   frameworkVersion: '2',
-  plugins: [
-    'serverless-webpack',
-    'serverless-offline',
-    'serverless-aws-documentation'
-  ],
   custom: {
+    webpack: {
+      webpackConfig: './webpack.config.js',
+      includeModules: true
+    },
     documentation: {
       api: {
         info: {
@@ -81,8 +80,13 @@ const serverlessConfiguration: Serverless = {
     },
     'serverless-offline': {
       httpPort: 9000
-    }
+    },
   },
+  plugins: [
+    'serverless-webpack',
+    'serverless-offline',
+    'serverless-aws-documentation'
+  ],
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
@@ -93,6 +97,11 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PG_HOST: '',
+      PG_PORT: '',
+      PG_DATABASE: '',
+      PG_USERNAME: '',
+      PG_PASSWORD: ''
     },
   },
   functions: {
@@ -104,13 +113,6 @@ const serverlessConfiguration: Serverless = {
             method: 'get',
             path: 'products',
             cors: true,
-            request: {
-              parameters: {
-                paths: {
-                  productId: true
-                }
-              }
-            },
             // @ts-ignore
             documentation: {
               description: 'Get all products',
@@ -157,6 +159,18 @@ const serverlessConfiguration: Serverless = {
         }
       ]
     },
+    createProduct: {
+      handler: 'handler.createProduct',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'products',
+            cors: true
+          }
+        }
+      ]
+    }
   }
 }
 
