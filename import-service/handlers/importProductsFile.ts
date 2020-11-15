@@ -14,7 +14,7 @@ export const importProductsFile = async (event) => {
             Expires: 60,
             ContentType: 'text/csv'
         }
-        const url = await s3.getSignedUrl('putObject', params);
+        const url = await s3.getSignedUrlPromise('putObject', params);
 
         return {
             statusCode: 200,

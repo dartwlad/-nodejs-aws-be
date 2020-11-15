@@ -2,7 +2,7 @@ import {S3} from "aws-sdk";
 import {Bucket} from "../constants/bucket";
 import csv from 'csv-parser';
 
-export const processUploadedFile = async (event) => {
+export const processUploadedFile = (event) => {
     console.log('about to process uploaded file', event);
 
     try {
