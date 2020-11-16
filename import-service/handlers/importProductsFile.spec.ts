@@ -13,12 +13,34 @@ describe('importProductsFile', () => {
 
         expect(await importProductsFile({
             queryStringParameters: {
-                name: 'testName'
+                name: 'testName',
+                type: 'text/csv'
             }
         })).toEqual( {
-            body: JSON.stringify(mockSignedUrl),
+            body: mockSignedUrl,
             headers,
             statusCode: 200
+        });
+
+        AWSMock.restore('S3');
+    });
+
+    it('should throw validation error', async () => {
+        const mockSignedUrl = 'mockSignedUrl';
+        AWSMock.setSDKInstance(AWS);
+        AWSMock.mock('S3', 'getSignedUrl', (_action, _params, callback) => {
+            callback(null, mockSignedUrl);
+        });
+
+        expect(await importProductsFile({
+            queryStringParameters: {
+                name: 'testName',
+                type: 'video/mp4'
+            }
+        })).toEqual( {
+            body: 'Content type not supported',
+            headers,
+            statusCode: 400
         });
 
         AWSMock.restore('S3');
@@ -32,7 +54,8 @@ describe('importProductsFile', () => {
 
         expect(await importProductsFile({
             queryStringParameters: {
-                name: 'testName'
+                name: 'testName',
+                type: 'text/csv'
             }
         })).toEqual( {statusCode: 500});
 
