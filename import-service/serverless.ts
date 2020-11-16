@@ -69,7 +69,8 @@ const serverlessConfiguration: Serverless = {
             request: {
               parameters: {
                 querystrings: {
-                  name: true
+                  name: true,
+                  type: true
                 }
               }
             }
