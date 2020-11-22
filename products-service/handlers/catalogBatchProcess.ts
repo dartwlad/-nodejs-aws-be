@@ -17,10 +17,23 @@ export const catalogBatchProcess = async (event) => {
         await sns.publish({
             Subject: 'Products added',
             Message: JSON.stringify(event.Records),
-            TopicArn: process.env.SNS_ARN
+            TopicArn: process.env.SNS_ARN,
+            MessageAttributes: {
+                status: {
+                    DataType: "String",
+                    StringValue: getStatus(),
+                },
+            },
         }).promise();
         console.log('Email send');
     } catch (error) {
         console.log('error', error);
     }
+}
+
+function getStatus(): string {
+    const random = Math.floor(Math.random() * 11);
+    return random >= 5
+        ? 'success'
+        : 'failed';
 }
