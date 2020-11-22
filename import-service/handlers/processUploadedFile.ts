@@ -46,7 +46,7 @@ export const processUploadedFile = async (event) => {
                     await s3.deleteObject(deleteParams).promise();
                     resolve();
                 });
-        })
+        });
     }
     try {
         await Promise.all(
