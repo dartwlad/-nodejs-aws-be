@@ -33,6 +33,11 @@ const serverlessConfiguration: Serverless = {
     iamRoleStatements: [
       {
         Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: '${cf:products-service-crud-${self:provider.stage}.SQSArn}'
+      },
+      {
+        Effect: 'Allow',
         Action: 's3:uploadToBucket',
         Resource: ['arn:aws:s3:::task5-files-upload']
       },
@@ -43,16 +48,6 @@ const serverlessConfiguration: Serverless = {
       }
     ]
   },
-  // resources: {
-  //   Resources: {
-  //     SQSQueue: {
-  //       Type: 'AWS::SQS::Queue',
-  //       Properties: {
-  //         QueueName: 'import-service-queue'
-  //       }
-  //     }
-  //   }
-  // },
   functions: {
     processUploadedFile: {
       handler: 'handler.processUploadedFile',

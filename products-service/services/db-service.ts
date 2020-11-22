@@ -5,11 +5,9 @@ import {LogService} from "./log-service";
 import {CreateProductDto} from "../dto/create-product.dto";
 
 export class DbService {
-    private client: Client;
     private logService: LogService;
 
     constructor() {
-        this.client = this.getClient();
         this.logService = new LogService();
     }
 
@@ -22,7 +20,7 @@ export class DbService {
 
         return {
             host: PG_HOST,
-            port: PG_PORT,
+            port: +PG_PORT,
             database: PG_DATABASE,
             user: PG_USERNAME,
             password: PG_PASSWORD,
@@ -34,22 +32,25 @@ export class DbService {
     }
 
     async getAllProducts(): Promise<Product[]> {
-        await this.client.connect();
+        const client = this.getClient();
+        await client.connect();
+
         try {
-            const {rows} = await this.client.query(`select * from product inner join stock s on product.id = s.product_id`);
+            const {rows} = await client.query(`select * from product inner join stock s on product.id = s.product_id`);
             return rows;
         } catch (e) {
             this.logService.error('getAllProducts', e);
             throw new DbException();
         } finally {
-            await this.client.end();
+            await client.end();
         }
     }
 
     async getProductById(id: string): Promise<Product> {
-        await this.client.connect();
+        const client = this.getClient();
+        await client.connect();
         try {
-            const {rows} = await this.client.query(`select * from product p
+            const {rows} = await client.query(`select * from product p
                 inner join stock s on p.id = s.product_id
                 where p.id = $1
             `, [id]);
@@ -59,13 +60,14 @@ export class DbService {
             this.logService.error('getProductById', e);
             throw new DbException();
         } finally {
-            await this.client.end();
+            await client.end();
         }
     }
 
     async createProduct(body): Promise<void> {
-        await this.client.connect();
+        const client = this.getClient();
         try {
+            await client.connect();
             const {
                 title,
                 description,
@@ -73,19 +75,19 @@ export class DbService {
                 count,
                 image
             } = body as CreateProductDto;
-            this.client.query('BEGIN');
-            await this.client.query(
+            await client.query('BEGIN');
+            await client.query(
                 `with resp1 as (insert into product(title, description, price, image) values($1, $2, $3, $4) returning id)
                  insert into stock (product_id, count) values ((select id from resp1), $5)`,
                 [title, description, price, image, count]
             );
-            this.client.query('COMMIT');
+            await client.query('COMMIT');
         } catch (e) {
             this.logService.error('createProduct', e);
-            this.client.query('ROLLBACK');
+            await client.query('ROLLBACK');
             throw new DbException();
         } finally {
-            await this.client.end();
+            await client.end();
         }
     }
 }

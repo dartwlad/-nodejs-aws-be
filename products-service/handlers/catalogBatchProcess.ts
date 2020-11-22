@@ -7,14 +7,13 @@ export const catalogBatchProcess = async (event) => {
     const productsService = new ProductsService();
     const sns = new SNS();
 
-    logService.log('about to catalogBatchProcess', event)
-    for (const record of event.Records) {
-        logService.log('about to add product', record)
-        await productsService.createProduct(JSON.parse(record));
-    }
-
-    logService.log('about to notify subscribers');
     try {
+        logService.log('about to catalogBatchProcess', event);
+        const productsToAdd = event.Records.map((record) => productsService.createProduct(record.body));
+        logService.log('about to add products', event.Records);
+        await Promise.all(productsToAdd);
+        logService.log('about to notify subscribers');
+
         await sns.publish({
             Subject: 'Products added',
             Message: JSON.stringify(event.Records),
