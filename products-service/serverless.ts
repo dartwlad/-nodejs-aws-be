@@ -104,13 +104,29 @@ const serverlessConfiguration: Serverless = {
           TopicName: 'products-service-crud-topic'
         }
       },
-      SNSSubscription: {
+      SNSSuccessSubscription: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
-          Endpoint: 'wlad792@gmail.com',
+          Endpoint: process.env.SUCCESS_EMAIL,
           Protocol: 'email',
           TopicArn: {
             Ref: 'SNSTopic'
+          },
+          FilterPolicy: {
+            status: ['success'],
+          }
+        }
+      },
+      SNSFailedSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: process.env.FAILED_EMAIL,
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic'
+          },
+          FilterPolicy: {
+            status: ['failed'],
           }
         }
       }
@@ -143,6 +159,8 @@ const serverlessConfiguration: Serverless = {
       PG_DATABASE: process.env.PG_DATABASE,
       PG_USERNAME: process.env.PG_USERNAME,
       PG_PASSWORD: process.env.PG_PASSWORD,
+      SUCCESS_EMAIL: process.env.SUCCESS_EMAIL,
+      FAILED_EMAIL: process.env.FAILED_EMAIL,
       SNS_ARN: {
         Ref: 'SNSTopic'
       }
