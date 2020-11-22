@@ -1,4 +1,7 @@
 import type { Serverless } from 'serverless/aws';
+import {config} from "dotenv";
+
+config();
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -87,6 +90,44 @@ const serverlessConfiguration: Serverless = {
     'serverless-offline',
     'serverless-aws-documentation'
   ],
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'products-service-crud-queue'
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'products-service-crud-topic'
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'wlad792@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic'
+          }
+        }
+      }
+    },
+    Outputs: {
+      SQSUrl: {
+        Value: {
+          Ref: 'SQSQueue'
+        }
+      },
+      SQSArn: {
+        Value: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn']
+        }
+      }
+    },
+  },
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
@@ -97,12 +138,33 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      PG_HOST: '',
-      PG_PORT: '',
-      PG_DATABASE: '',
-      PG_USERNAME: '',
-      PG_PASSWORD: ''
+      PG_HOST: process.env.PG_HOST,
+      PG_PORT: process.env.PG_PORT,
+      PG_DATABASE: process.env.PG_DATABASE,
+      PG_USERNAME: process.env.PG_USERNAME,
+      PG_PASSWORD: process.env.PG_PASSWORD,
+      SNS_ARN: {
+        Ref: 'SNSTopic'
+      }
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: [
+          {
+            'Fn::GetAtt': ['SQSQueue', 'Arn']
+          }
+        ]
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sns:*',
+        Resource: {
+          Ref: 'SNSTopic'
+        }
+      }
+    ]
   },
   functions: {
     getProducts: {
@@ -167,6 +229,19 @@ const serverlessConfiguration: Serverless = {
             method: 'post',
             path: 'products',
             cors: true
+          }
+        }
+      ]
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: {
+              'Fn::GetAtt': ['SQSQueue', 'Arn']
+            }
           }
         }
       ]

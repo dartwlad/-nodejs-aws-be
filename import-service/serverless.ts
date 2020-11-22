@@ -22,11 +22,13 @@ const serverlessConfiguration: Serverless = {
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
+    stage: 'dev',
     apiGateway: {
       minimumCompressionSize: 1024,
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      SQS_URL: '${cf:products-service-crud-${self:provider.stage}.SQSUrl}',
     },
     iamRoleStatements: [
       {
@@ -41,6 +43,16 @@ const serverlessConfiguration: Serverless = {
       }
     ]
   },
+  // resources: {
+  //   Resources: {
+  //     SQSQueue: {
+  //       Type: 'AWS::SQS::Queue',
+  //       Properties: {
+  //         QueueName: 'import-service-queue'
+  //       }
+  //     }
+  //   }
+  // },
   functions: {
     processUploadedFile: {
       handler: 'handler.processUploadedFile',
