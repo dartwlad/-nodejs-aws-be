@@ -3,9 +3,6 @@ import type { Serverless } from 'serverless/aws';
 const serverlessConfiguration: Serverless = {
   service: {
     name: 'import-service',
-    // app and org for use with dashboard.serverless.com
-    // app: your-app-name,
-    // org: your-org-name,
   },
   frameworkVersion: '2',
   custom: {
@@ -17,8 +14,41 @@ const serverlessConfiguration: Serverless = {
       httpPort: 9000
     },
   },
-  // Add the serverless-webpack plugin
-  plugins: ['serverless-offline', 'serverless-webpack'],
+  plugins: [
+    'serverless-offline',
+    'serverless-webpack',
+    'serverless-pseudo-parameters'
+  ],
+  resources: {
+    Resources: {
+      GatewayResponseDenied: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Credentials': "'true'"
+          },
+          ResponseType: 'ACCESS_DENIED',
+          RestApiId: {
+            Ref:  'ApiGatewayRestApi'
+          }
+        }
+      },
+      GatewayResponseUnauthorized: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Credentials': "'true'"
+          },
+          ResponseType: 'UNAUTHORIZED',
+          RestApiId: {
+            Ref:  'ApiGatewayRestApi'
+          }
+        }
+      },
+    }
+  },
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
@@ -80,6 +110,13 @@ const serverlessConfiguration: Serverless = {
                   type: true
                 }
               }
+            },
+            authorizer: {
+              name: 'basicAuthorizer',
+              arn: 'arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:authorization-service-dev-basicAuthorizer',
+              resultTtlInSeconds: 0,
+              identitySource: 'method.request.header.Authorization',
+              type: 'token'
             }
           }
         }
