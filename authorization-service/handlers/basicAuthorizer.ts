@@ -25,7 +25,7 @@ export const basicAuthorizer = async (event, _ctx, cb) => {
         cb(null, policy);
     } catch (error) {
         console.log('error', error);
-        cb(`Unauthorized: ${error.message}`);
+        cb('Unauthorized');
     }
 }
 
