@@ -10,5 +10,8 @@
   },
   "scripts": {
     "create:service": "serverless create --template aws-nodejs-typescript --path name"
+  },
+  "dependencies": {
+    "helmet": "^4.2.0"
   }
 }
