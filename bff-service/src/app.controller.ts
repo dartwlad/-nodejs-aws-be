@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { All, CacheInterceptor, Controller, Req, Request, UseInterceptors } from "@nestjs/common";
 import { AppService } from './app.service';
 
 @Controller()
+@UseInterceptors(CacheInterceptor)
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @All([''])
+  async bff(@Req() req: Request) {
+    return await this.appService.bff(req);
   }
 }
